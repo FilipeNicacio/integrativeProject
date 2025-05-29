@@ -1,43 +1,44 @@
-# 🏨 Sistema de Gestão de Hotel
+# 🏨 Hotel Management System
 
-Projeto desenvolvido para o **Projeto Integrador da faculdade**, com o objetivo de criar um sistema completo para auxiliar na administração de hotéis, pousadas e estabelecimentos de hospedagem.
-
----
-
-## 📋 Descrição
-
-O sistema tem como finalidade facilitar a gestão diária de um hotel, integrando ferramentas de controle de reservas, cadastro de hóspedes, gerenciamento de quartos, solicitação de serviços de quarto por parte dos clientes e geração de relatórios administrativos.
+Project developed for the **College Integrative Project**, with the goal of creating a comprehensive system to assist in the management of hotels, inns, and lodging establishments.
 
 ---
 
-## 🎯 Objetivos do Projeto
+## 📋 Description
 
-- Otimizar o gerenciamento de um hotel
-- Automatizar tarefas como check-in/check-out
-- Permitir que o cliente solicite serviços de quarto diretamente pelo sistema
-- Fornecer relatórios sobre ocupação, finanças e desempenho
-- Centralizar informações de clientes, reservas e quartos
+This system is designed to streamline the daily operations of a hotel by integrating tools for reservation management, guest registration, room administration, client-side room service requests, and the generation of administrative reports.
 
 ---
 
-## 🧑‍💼 Público-alvo
+## 🎯 Project Objectives
 
-O sistema é voltado para:
-- Pequenos e médios hotéis
-- Pousadas e hostels
-- Donos de estabelecimentos de hospedagem que buscam automatizar a gestão
-- Funcionários da recepção e administração
-
----
-
-## 🛠️ Tecnologias Utilizadas
-
-- **Back-end**: Python com Flask
-- **Front-end**: HTML5, CSS3
-- **Banco de Dados**: MySQL
-- **Ambiente de desenvolvimento**: PyCharm (Community Edition)
+- Optimize hotel management processes  
+- Automate tasks such as check-in and check-out  
+- Allow guests to request room services directly through the system  
+- Provide reports on occupancy, financials, and performance  
+- Centralize information regarding guests, reservations, and rooms
 
 ---
 
-## 📂 Estrutura do Projeto
+## 🧑‍💼 Target Audience
 
+This system is intended for:
+- Small and medium-sized hotels  
+- Inns and hostels  
+- Lodging owners seeking administrative automation  
+- Reception and administrative staff
+
+---
+
+## 🛠️ Technologies Used
+
+- **Back-end**: Python with Flask  
+- **Front-end**: HTML5, CSS3  
+- **Database**: MySQL  
+- **Development Environment**: PyCharm (Community Edition)
+
+---
+
+## 📂 Project Structure
+
+_To be updated as development progresses..._
