@@ -8,7 +8,19 @@
 <body>
     <h1>Welcome to the Hotel Management System</h1>
     <p>This is the homepage.</p>
+    <hr style="margin-top: 50px;">
     <h2>Guest registration</h2>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <ul class="flashes">
+                {% for category, message in messages %}
+                    <li class="{{ category }}">{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+
     <form action="/guest_registration" method="post">
         <label for="name">Name:</label><br>
         <input type="text" id="name" name="name" required maxlength="100" pattern="[A-Za-zÀ-ÿ\s]+" style="text-align: center;"><br><br>
