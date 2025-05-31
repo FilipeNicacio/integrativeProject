@@ -6,9 +6,12 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
+
     <h1>Welcome to the Hotel Management System</h1>
     <p>This is the homepage.</p>
-    <hr style="margin-top: 50px;">
+
+    <hr style="margin-top: 40px; margin-bottom: 20px;">
+
     <h2>Guest registration</h2>
 
     {% with messages = get_flashed_messages(with_categories=true) %}
@@ -36,5 +39,10 @@
 
         <button type="submit">Register</button>
     </form>
+
+    <hr style="margin-top: 40px; margin-bottom: 20px;">
+
+    <a href="/search_guest"><button>Search Guest</button></a>
+
 </body>
 </html>

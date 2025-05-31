@@ -49,6 +49,29 @@ def guest_registration():
         flash(f"An error occurred during registration: {e}", "error")
         return redirect("/")
 
+@app.route("/search_guest")
+def search_guest():
+    return render_template("search.html")
+
+@app.route("/search_result", methods=["POST"])
+def search_result():
+    search_term = request.form['search_term']
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    query = """
+        SELECT * FROM guests
+        WHERE name LIKE %s OR document LIKE %s
+    """
+    search_like = f"%{search_term}%"
+    cursor.execute(query, (search_like, search_like))
+    results = cursor.fetchall()
+
+    cursor.close()
+    conn.close()
+
+    return render_template("search.html", results=results, search_term=search_term)
+
 def get_db_connection():
     return mysql.connector.connect(**db_config)
 
