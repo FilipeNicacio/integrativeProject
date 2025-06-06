@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, flash
+from flask import Flask, render_template, request, redirect, flash, url_for
 import mysql.connector
 import re
 
@@ -71,6 +71,68 @@ def search_result():
     conn.close()
 
     return render_template("search.html", results=results, search_term=search_term)
+
+@app.route("/edit_guest/<int:guest_id>", methods=["GET"])
+def edit_guest(guest_id):
+    print(f"Tentando atualizar hóspede com ID {guest_id}")
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute("SELECT * FROM guests WHERE id = %s", (guest_id,))
+        guest = cursor.fetchone()
+        cursor.close()
+        conn.close()
+
+        if guest:
+            return render_template("edit_guest.html", guest=guest)
+        else:
+            flash("Guest not found.", "error")
+            return redirect("/search_guest")
+    except Exception as e:
+        flash(f"An error occurred while loading guest data: {e}", "error")
+        return redirect("/search_guest")
+
+@app.route("/update_guest/<int:guest_id>", methods=["POST"])
+def update_guest(guest_id):
+    name = request.form['name']
+    email = request.form['email']
+    phone = request.form['phone']
+    document = request.form['document']
+
+    # Limpar dados
+    import re
+    name = re.sub(r'\s+', ' ', name.strip())
+    phone = re.sub(r'\D', '', phone)
+    document = re.sub(r'\D', '', document)
+
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+
+        # Verificar se já existe outro hóspede com o mesmo documento (exceto ele mesmo)
+        cursor.execute("SELECT id FROM guests WHERE document = %s AND id != %s", (document, guest_id))
+        existing = cursor.fetchone()
+        if existing:
+            flash("Document already exists for another guest.", "error")
+            return redirect(url_for("edit_guest", guest_id=guest_id))
+
+        # Atualizar dados
+        cursor.execute("""
+            UPDATE guests
+            SET name = %s, email = %s, phone = %s, document = %s
+            WHERE id = %s
+        """, (name, email, phone, document, guest_id))
+
+        conn.commit()
+        cursor.close()
+        conn.close()
+        flash("Guest updated successfully!", "success")
+        return redirect("/search_guest")
+
+    except Exception as e:
+        flash(f"An error occurred while updating: {e}", "error")
+        return redirect(url_for("edit_guest", guest_id=guest_id))
+
 
 def get_db_connection():
     return mysql.connector.connect(**db_config)
