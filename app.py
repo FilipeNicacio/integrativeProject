@@ -133,6 +133,30 @@ def update_guest(guest_id):
         flash(f"An error occurred while updating: {e}", "error")
         return redirect(url_for("edit_guest", guest_id=guest_id))
 
+@app.route("/delete_guest/<int:guest_id>", methods=["POST"])
+def delete_guest(guest_id):
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+
+        # Verifica se o hóspede existe
+        cursor.execute("SELECT * FROM guests WHERE id = %s", (guest_id,))
+        guest = cursor.fetchone()
+        if not guest:
+            flash("Guest not found.", "error")
+            return redirect("/search_guest")
+
+        # Deleta o hóspede
+        cursor.execute("DELETE FROM guests WHERE id = %s", (guest_id,))
+        conn.commit()
+        cursor.close()
+        conn.close()
+
+        flash("Guest deleted successfully.", "success")
+        return redirect("/")
+    except Exception as e:
+        flash(f"An error occurred while deleting guest: {e}", "error")
+        return redirect("/search_guest")
 
 def get_db_connection():
     return mysql.connector.connect(**db_config)
