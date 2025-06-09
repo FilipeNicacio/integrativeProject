@@ -158,6 +158,22 @@ def delete_guest(guest_id):
         flash(f"An error occurred while deleting guest: {e}", "error")
         return redirect("/search_guest")
 
+@app.route("/list_guests")
+def list_guests():
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute("SELECT * FROM guests ORDER BY name ASC")
+        guests = cursor.fetchall()
+        cursor.close()
+        conn.close()
+
+        return render_template("search.html", results=guests, search_term="All Guests")
+
+    except Exception as e:
+        flash(f"An error occurred while listing guests: {e}", "error")
+        return redirect("/")
+
 def get_db_connection():
     return mysql.connector.connect(**db_config)
 
