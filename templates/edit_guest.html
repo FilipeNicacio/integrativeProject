@@ -20,16 +20,16 @@
 
     <form action="{{ url_for('update_guest', guest_id=guest.id) }}" method="POST">
         <label>Name:</label><br>
-        <input type="text" name="name" value="{{ guest.name }}" required><br><br>
+        <input type="text" name="name" value="{{ guest.name }}" required maxlength="100" pattern="[A-Za-zÀ-ÿ\s]+" style="text-align: center;"><br><br>
 
         <label>Document:</label><br>
-        <input type="text" name="document" value="{{ guest.document }}" required><br><br>
+        <input type="text" name="document" value="{{ guest.document }}" required maxlength="11" minlength="11" pattern="\d{11}" style="text-align: center;"><br><br>
 
         <label>Email:</label><br>
-        <input type="email" name="email" value="{{ guest.email }}" required><br><br>
+        <input type="email" name="email" value="{{ guest.email }}" required maxlength="100" style="text-align: center;"><br><br>
 
         <label>Phone:</label><br>
-        <input type="text" name="phone" value="{{ guest.phone }}" required><br><br>
+        <input type="text" name="phone" value="{{ guest.phone }}" required maxlength="11" minlength="11" pattern="\d{11}" style="text-align: center;"><br><br>
 
         <button type="submit">Update</button>
     </form>

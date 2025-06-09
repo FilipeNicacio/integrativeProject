@@ -22,6 +22,9 @@ def guest_registration():
     email = request.form['email'].strip()
     phone = re.sub(r'\D', '', request.form['phone'])
     document = re.sub(r'\D', '', request.form['document'].strip())
+    if len(document) != 11:
+        flash("Document must contain exactly 11 digits.", "error")
+        return redirect("/")
 
 
     try:
@@ -98,6 +101,9 @@ def update_guest(guest_id):
     email = request.form['email']
     phone = request.form['phone']
     document = request.form['document']
+    if len(document) != 11:
+        flash("Document must contain exactly 11 digits.", "error")
+        return redirect(url_for("edit_guest", guest_id=guest_id))
 
     # Limpar dados
     import re
