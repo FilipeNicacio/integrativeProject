@@ -35,10 +35,10 @@
         <input type="text" id="room_number" name="room_number" required style="text-align: center;"><br><br>
 
         <label for="check_in_date">Check-in Date:</label><br>
-        <input type="date" id="check_in_date" name="check_in_date" required style="text-align: center;"><br><br>
+        <input type="date" id="check_in_date" name="check_in_date" min="{{ today }}" required style="text-align: center;" onchange="enableCheckOut()"><br><br>
 
         <label for="check_out_date">Check-out Date:</label><br>
-        <input type="date" id="check_out_date" name="check_out_date" required style="text-align: center;"><br><br>
+        <input type="date" id="check_out_date" name="check_out_date" required disabled style="text-align: center;"><br><br>
 
         <button type="submit">Reserve</button>
     </form>
@@ -48,6 +48,15 @@
     <form action="/" method="get" style="display: inline;">
     <button type="submit">← Back to Home</button>
     </form>
+
+    <script>
+    function enableCheckOut() {
+        const checkIn = document.getElementById("check_in_date").value;
+        const checkOut = document.getElementById("check_out_date");
+        checkOut.disabled = !checkIn;
+        checkOut.min = checkIn;
+    }
+    </script>
 
 </body>
 </html>

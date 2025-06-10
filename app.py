@@ -1,6 +1,8 @@
 from flask import Flask, render_template, request, redirect, flash, url_for
+from datetime import date
 import mysql.connector
 import re
+
 
 app = Flask(__name__)
 app.secret_key = 'hotel'
@@ -189,7 +191,8 @@ def reservation():
         guests = cursor.fetchall()
         cursor.close()
         conn.close()
-        return render_template("reservation.html", guests=guests)
+        today = date.today().isoformat()  # formato: YYYY-MM-DD
+        return render_template("reservation.html", guests=guests, today=today)
     except Exception as e:
         flash(f"Error loading guests: {e}", "error")
         return redirect("/")
