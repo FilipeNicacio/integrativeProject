@@ -180,6 +180,61 @@ def list_guests():
         flash(f"An error occurred while listing guests: {e}", "error")
         return redirect("/")
 
+@app.route("/reservation")
+def reservation():
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute("SELECT id, name FROM guests")
+        guests = cursor.fetchall()
+        cursor.close()
+        conn.close()
+        return render_template("reservation.html", guests=guests)
+    except Exception as e:
+        flash(f"Error loading guests: {e}", "error")
+        return redirect("/")
+
+
+@app.route("/make_reservation", methods=["POST"])
+def make_reservation():
+    guest_id = request.form['guest_id']
+    room_number = request.form['room_number'].strip()
+    check_in_date = request.form['check_in_date']
+    check_out_date = request.form['check_out_date']
+
+    if not guest_id or not room_number or not check_in_date or not check_out_date:
+        flash("All fields are required.", "error")
+        return redirect("/reservation")
+
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+
+        # Verificar se o hóspede existe
+        cursor.execute("SELECT id FROM guests WHERE id = %s", (guest_id,))
+        guest = cursor.fetchone()
+
+        if not guest:
+            flash("Guest ID not found. Please verify and try again.", "error")
+            return redirect("/")
+
+        # Inserir reserva
+        cursor.execute("""
+            INSERT INTO reservations (guest_id, room_number, check_in_date, check_out_date)
+            VALUES (%s, %s, %s, %s)
+        """, (guest_id, room_number, check_in_date, check_out_date))
+
+        conn.commit()
+        cursor.close()
+        conn.close()
+
+        flash("Reservation successfully created!", "success")
+        return redirect("/reservation")
+
+    except Exception as e:
+        flash(f"An error occurred while making the reservation: {e}", "error")
+        return redirect("/reservation")
+
 def get_db_connection():
     return mysql.connector.connect(**db_config)
 

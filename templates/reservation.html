@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Make Reservation</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+    <h1>Make a Reservation</h1>
+
+    <hr style="margin-top: 40px; margin-bottom: 40px;">
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <ul class="flashes">
+                {% for category, message in messages %}
+                    <li class="{{ category }}">{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+
+    <form action="/make_reservation" method="post">
+
+        <label for="guest_id">Select Guest:</label><br>
+        <select name="guest_id" id="guest_id" required>
+            <option value="">-- Choose a guest --</option>
+            {% for guest in guests %}
+                <option value="{{ guest.id }}">{{ guest.name }} (ID: {{ guest.id }})</option>
+            {% endfor %}
+        </select><br><br>
+
+        <label for="room_number">Room Number:</label><br>
+        <input type="text" id="room_number" name="room_number" required style="text-align: center;"><br><br>
+
+        <label for="check_in_date">Check-in Date:</label><br>
+        <input type="date" id="check_in_date" name="check_in_date" required style="text-align: center;"><br><br>
+
+        <label for="check_out_date">Check-out Date:</label><br>
+        <input type="date" id="check_out_date" name="check_out_date" required style="text-align: center;"><br><br>
+
+        <button type="submit">Reserve</button>
+    </form>
+
+    <br>
+
+    <form action="/" method="get" style="display: inline;">
+    <button type="submit">← Back to Home</button>
+    </form>
+
+</body>
+</html>
