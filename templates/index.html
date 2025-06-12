@@ -10,9 +10,8 @@
     <h1>Welcome to the Hotel Management System</h1>
     <p>This is the homepage.</p>
 
-    <hr style="margin-top: 40px; margin-bottom: 20px;">
-
-    <h2>Guest registration</h2>
+    <hr style="margin-top: 40px;">
+    <br>
 
     {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
@@ -25,22 +24,23 @@
     {% endwith %}
 
     <form action="/guest_registration" method="post">
+        <h2>Guest registration</h2>
         <label for="name">Name:</label><br>
-        <input type="text" id="name" name="name" required maxlength="100" pattern="[A-Za-zÀ-ÿ\s]+" style="text-align: center;"><br><br>
+        <input type="text" id="name" name="name" required maxlength="100" pattern="[A-Za-zÀ-ÿ\s]+" placeholder="Enter your name..." style="text-align: center;"><br><br>
 
         <label for="document">CPF:</label><br>
-        <input type="text" id="document" name="document" required maxlength="11" minlength="11" pattern="\d{11}" style="text-align: center;"><br><br>
+        <input type="text" id="document" name="document" required maxlength="11" minlength="11" pattern="\d{11}" placeholder="Enter your CPF..." style="text-align: center;"><br><br>
 
-        <label for="email">E-mail:</label><br>
-        <input type="email" id="email" name="email" required maxlength="100" style="text-align: center;"><br><br>
+        <label for="email">Email Address:</label><br>
+        <input type="email" id="email" name="email" required maxlength="100" placeholder="Enter your e-mail..." style="text-align: center;"><br><br>
 
-        <label for="phone">Phone:</label><br>
-        <input type="text" id="phone" name="phone" required maxlength="11" pattern="\d{11}" style="text-align: center;"><br><br>
+        <label for="phone">Phone Number:</label><br>
+        <input type="text" id="phone" name="phone" required maxlength="11" pattern="\d{11}" placeholder="Enter your phone..." style="text-align: center;"><br><br>
 
         <button type="submit">Register</button>
     </form>
 
-    <br>
+    <br><br><br>
 
     <a href="/reservation"><button>Make Reservation</button></a>
 

@@ -1,5 +1,5 @@
 body {
-    background-color: #f9fafb;
+    background-color: white;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     text-align: center;
     padding-top: 60px;
@@ -47,13 +47,36 @@ button {
     background-color: #3b82f6;
     color: #fff;
     border: none;
-    border-radius: 6px;
+    border-radius: 10px;
     font-size: 1rem;
-    font-weight: 500;
+    font-weight: 400;
     cursor: pointer;
     transition: background-color 0.3s ease;
 }
 
 button:hover {
     background-color: #2563eb;
+}
+
+input[type="text"], input[type="email"], input[type="date"], select {
+  border: 2px solid #ccc;
+  border-radius: 10px;
+  padding: 8px 12px;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease, border-width 0.3s ease;
+  outline: none;              /* tirar aquele contorno padrão azul do navegador */
+  width: 230px;
+  box-sizing: border-box;
+}
+
+/* Quando o mouse estiver sobre o input */
+input[type="text"]:hover, input[type="email"]:hover, input[type="date"]:hover, select:hover {
+  border-color: #3b82f6;
+  border-width: 3px;
+}
+
+/* Quando o input estiver focado (digitando) */
+input[type="text"]:focus, input[type="email"];focus, input[type="date"]:focus, select:focus {
+  border-color: #3b82f6;
+  border-width: 3px;
+  box-shadow: 0 0 8px rgba(0, 123, 255, 0.5);
 }

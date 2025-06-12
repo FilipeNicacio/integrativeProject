@@ -30,7 +30,7 @@ def guest_registration():
 
 
     try:
-        conn = mysql.connector.connect(**db_config)
+        conn = get_db_connection()
         cursor = conn.cursor()
 
         # Verificar duplicidade de documento
@@ -237,6 +237,50 @@ def make_reservation():
     except Exception as e:
         flash(f"An error occurred while making the reservation: {e}", "error")
         return redirect("/reservation")
+
+@app.route('/list_reservations')
+def list_reservations():
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+
+        # Query com JOIN para buscar o nome do hóspede
+        query = """
+                SELECT
+                    r.id,
+                    r.room_number,
+                    r.check_in_date,
+                    r.check_out_date,
+                    g.name AS guest_name 
+                FROM
+                    reservations AS r
+                JOIN
+                    guests AS g ON r.guest_id = g.id
+                ORDER BY
+                    r.check_in_date ASC
+            """
+        cursor.execute(query)
+        reservations_list = cursor.fetchall()
+
+        # A rota /reservation também precisa da lista de hóspedes para o formulário
+        cursor.execute("SELECT id, name FROM guests ORDER BY name ASC")
+        guests_for_form = cursor.fetchall()
+
+        cursor.close()
+        conn.close()
+
+        today = date.today().isoformat()
+
+        # Passamos as duas listas para o template
+        return render_template(
+            'reservation.html',
+            reservations=reservations_list,
+            guests=guests_for_form,
+        )
+
+    except Exception as e:
+        flash(f"An error occurred while listing reservations: {e}", "error")
+        return redirect("/")
 
 def get_db_connection():
     return mysql.connector.connect(**db_config)
