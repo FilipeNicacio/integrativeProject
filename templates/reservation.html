@@ -31,8 +31,18 @@
             {% endfor %}
         </select><br><br>
 
-        <label for="room_number">Room Number:</label><br>
-        <input type="text" id="room_number" name="room_number" required style="text-align: center;"><br><br>
+        <label for="floor_select">Select Floor:</label><br>
+        <select name="floor_id" id="floor_select" style="text-align: center;" required>
+            <option value="">-- Choose a floor --</option>
+            {% for floor in floors %}
+                <option value="{{ floor.id }}">{{ floor.number }}º Floor</option>
+            {% endfor %}
+        </select><br><br>
+
+        <label for="room_select">Select Room:</label><br>
+        <select name="room_id" id="room_select" style="text-align: center;" required disabled>
+            <option value="">-- Choose a floor first  --</option>
+        </select><br><br>
 
         <label for="check_in_date">Check-in Date:</label><br>
         <input type="date" id="check_in_date" name="check_in_date" min="{{ today }}" required style="text-align: center;" onchange="enableCheckOut()"><br><br>
@@ -58,6 +68,7 @@
                 <tr>
                     <th>Reservation ID</th>
                     <th>Guest Name</th>
+                    <th>Floor</th>
                     <th>Room Number</th>
                     <th>Check-in</th>
                     <th>Check-out</th>
@@ -67,8 +78,12 @@
                 {% for reservation in reservations %}
                     <tr>
                         <td>{{ reservation.id }}</td>
-                        <td>{{ reservation.guest_name }}</td> <td>{{ reservation.room_number }}</td>
-                        <td>{{ reservation.check_in_date.strftime('%d/%m/%Y') }}</td> <td>{{ reservation.check_out_date.strftime('%d/%m/%Y') }}</td> </tr>
+                        <td>{{ reservation.guest_name }}</td>
+                        <td>{{ reservation.floor_number }}º Floor</td>
+                        <td>{{ reservation.room_number }}</td>
+                        <td>{{ reservation.check_in_date.strftime('%d/%m/%Y') }}</td>
+                        <td>{{ reservation.check_in_date.strftime('%d/%m/%Y') }}</td>
+                    </tr>
                 {% endfor %}
             </tbody>
         </table>
@@ -87,6 +102,58 @@
         checkOut.disabled = !checkIn;
         checkOut.min = checkIn;
     }
+
+    document.addEventListener('DOMContentLoaded', function() {
+            const floorSelect = document.getElementById('floor_select');
+            const roomSelect = document.getElementById('room_select');
+
+            floorSelect.addEventListener('change', function() {
+                const floorId = this.value;
+
+                // Limpa e desabilita o seletor de quartos
+                roomSelect.innerHTML = '<option value="">-- Loading rooms... --</option>';
+                roomSelect.disabled = true;
+
+                if (!floorId) {
+                    roomSelect.innerHTML = '<option value="">-- Choose a floor to see rooms --</option>';
+                    return;
+                }
+
+                // Chamada para a API no backend
+                fetch(`/get_rooms_by_floor/${floorId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        // Limpa o seletor novamente para adicionar as novas opções
+                        roomSelect.innerHTML = '<option value="">-- Choose a room --</option>';
+
+                        if (data.error) {
+                            console.error('Error fetching rooms:', data.error);
+                            roomSelect.innerHTML = '<option value="">-- Error loading rooms --</option>';
+                            return;
+                        }
+
+                        if (data.length === 0) {
+                            roomSelect.innerHTML = '<option value="">-- No rooms found --</option>';
+                            return;
+                        }
+
+                        // Popula o seletor de quartos com os dados recebidos
+                        data.forEach(room => {
+                            const option = document.createElement('option');
+                            option.value = room.id;
+                            option.textContent = room.room_number;
+                            roomSelect.appendChild(option);
+                        });
+
+                        // Habilita o seletor de quartos
+                        roomSelect.disabled = false;
+                    })
+                    .catch(error => {
+                        console.error('Fetch error:', error);
+                        roomSelect.innerHTML = '<option value="">-- Failed to load rooms --</option>';
+                    });
+            });
+        });
     </script>
 
 </body>

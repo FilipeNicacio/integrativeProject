@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, flash, url_for
+from flask import Flask, render_template, request, redirect, flash, url_for, jsonify
 from datetime import date
 import mysql.connector
 import re
@@ -189,23 +189,39 @@ def reservation():
         cursor = conn.cursor(dictionary=True)
         cursor.execute("SELECT id, name FROM guests")
         guests = cursor.fetchall()
+        cursor.execute("SELECT id, number FROM floors ORDER BY number ASC")
+        floors = cursor.fetchall()
         cursor.close()
         conn.close()
         today = date.today().isoformat()  # formato: YYYY-MM-DD
-        return render_template("reservation.html", guests=guests, today=today)
+        return render_template("reservation.html", guests=guests, floors=floors, today=today)
     except Exception as e:
         flash(f"Error loading guests: {e}", "error")
         return redirect("/")
+
+@app.route("/get_rooms_by_floor/<int:floor_id>")
+def get_rooms_by_floor(floor_id):
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute("SELECT id, room_number FROM rooms WHERE floor_id = %s ORDER BY room_number ASC", (floor_id,))
+        rooms = cursor.fetchall()
+        cursor.close()
+        conn.close()
+        return jsonify(rooms)
+    except Exception as e:
+        return jsonify({"Fatal error": str(e)}), 500
+
 
 
 @app.route("/make_reservation", methods=["POST"])
 def make_reservation():
     guest_id = request.form['guest_id']
-    room_number = request.form['room_number'].strip()
+    room_id = request.form.get('room_id').strip()
     check_in_date = request.form['check_in_date']
     check_out_date = request.form['check_out_date']
 
-    if not guest_id or not room_number or not check_in_date or not check_out_date:
+    if not guest_id or not room_id or not check_in_date or not check_out_date:
         flash("All fields are required.", "error")
         return redirect("/reservation")
 
@@ -221,11 +237,17 @@ def make_reservation():
             flash("Guest ID not found. Please verify and try again.", "error")
             return redirect("/")
 
+        # Verificar se o quarto existe
+        cursor.execute("SELECT id FROM rooms WHERE id = %s", (room_id,))
+        if not cursor.fetchone():
+            flash("Room not found.", "error")
+            return redirect(url_for('reservation'))
+
         # Inserir reserva
         cursor.execute("""
-            INSERT INTO reservations (guest_id, room_number, check_in_date, check_out_date)
+            INSERT INTO reservations (guest_id, room_id, check_in_date, check_out_date)
             VALUES (%s, %s, %s, %s)
-        """, (guest_id, room_number, check_in_date, check_out_date))
+        """, (guest_id, room_id, check_in_date, check_out_date))
 
         conn.commit()
         cursor.close()
@@ -247,17 +269,22 @@ def list_reservations():
         # Query com JOIN para buscar o nome do hóspede
         query = """
                 SELECT
-                    r.id,
-                    r.room_number,
-                    r.check_in_date,
-                    r.check_out_date,
-                    g.name AS guest_name 
-                FROM
-                    reservations AS r
-                JOIN
-                    guests AS g ON r.guest_id = g.id
-                ORDER BY
-                    r.check_in_date ASC
+                r.id,
+                r.check_in_date,
+                r.check_out_date,
+                g.name AS guest_name,
+                ro.room_number,
+                f.number AS floor_number  -- Adicionamos o número do andar
+            FROM
+                reservations AS r
+            JOIN
+                guests AS g ON r.guest_id = g.id
+            JOIN
+                rooms AS ro ON r.room_id = ro.id
+            JOIN
+                floors AS f ON ro.floor_id = f.id  -- Novo JOIN com a tabela de andares
+            ORDER BY
+                r.check_in_date ASC, f.number ASC, ro.room_number ASC
             """
         cursor.execute(query)
         reservations_list = cursor.fetchall()
@@ -265,9 +292,8 @@ def list_reservations():
         # A rota /reservation também precisa da lista de hóspedes para o formulário
         cursor.execute("SELECT id, name FROM guests ORDER BY name ASC")
         guests_for_form = cursor.fetchall()
-
-        cursor.close()
-        conn.close()
+        cursor.execute("SELECT id, number FROM floors ORDER BY number ASC")
+        floors_for_form = cursor.fetchall()
 
         today = date.today().isoformat()
 
@@ -276,6 +302,8 @@ def list_reservations():
             'reservation.html',
             reservations=reservations_list,
             guests=guests_for_form,
+            floors=floors_for_form,
+            today=today
         )
 
     except Exception as e:
