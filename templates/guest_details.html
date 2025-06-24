@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Guest Details</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+    <h1>Guest Details</h1>
+
+    <hr style="margin-top: 40px; margin-bottom: 40px;">
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <ul class="flashes">
+                {% for category, message in messages %}
+                    <li class="{{ category }}">{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+
+    {% if guest %}
+    <div class="guest-card">
+        <h2>{{ guest.name }}</h2>
+        <div class="guest-info">
+            <p><strong>ID:</strong> {{ guest.id }}</p>
+            <p><strong>Document (CPF):</strong> {{ guest.document }}</p>
+            <p><strong>Email:</strong> {{ guest.email }}</p>
+            <p><strong>Phone:</strong> {{ guest.phone }}</p>
+        </div>
+    </div>
+    {% else %}
+    <p>Guest information not available.</p>
+    {% endif %}
+
+    <div class="button-group">
+        <a href="{{ url_for('list_reservations') }}"><button>← Back to Reservations</button></a>
+        <a href="{{ url_for('home') }}"><button>← Back to Home</button></a>
+    </div>
+
+</body>
+</html>

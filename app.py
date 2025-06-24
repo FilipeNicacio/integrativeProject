@@ -287,15 +287,15 @@ def list_reservations():
         conn = get_db_connection()
         cursor = conn.cursor(dictionary=True)
 
-        # Query com JOIN para buscar o nome do hóspede
         query = """
                 SELECT
                 r.id,
                 r.check_in_date,
                 r.check_out_date,
+                g.id AS guest_id,
                 g.name AS guest_name,
                 ro.room_number,
-                f.number AS floor_number  -- Adicionamos o número do andar
+                f.number AS floor_number 
             FROM
                 reservations AS r
             JOIN
@@ -303,7 +303,7 @@ def list_reservations():
             JOIN
                 rooms AS ro ON r.room_id = ro.id
             JOIN
-                floors AS f ON ro.floor_id = f.id  -- Novo JOIN com a tabela de andares
+                floors AS f ON ro.floor_id = f.id  
             ORDER BY
                 r.check_in_date ASC, f.number ASC, ro.room_number ASC
             """
@@ -318,7 +318,6 @@ def list_reservations():
 
         today = date.today().isoformat()
 
-        # Passamos as duas listas para o template
         return render_template(
             'reservation.html',
             reservations=reservations_list,
@@ -360,6 +359,25 @@ def get_booked_dates(room_id):
         flash(f"An error occurred while selecting the check-in and check-out date: {e}", "error")
         return redirect("/")
 
+@app.route('/guest_details/<int:guest_id>')
+def guest_details(guest_id):
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute("SELECT * FROM guests WHERE id = %s", (guest_id,))
+        guest = cursor.fetchone()
+        cursor.close()
+        conn.close()
+
+        if guest:
+            return render_template('guest_details.html', guest=guest)
+        else:
+            flash("Guest not found.", "error")
+            return redirect(url_for('list_reservations'))
+
+    except Exception as e:
+        flash(f"An error occurred: {e}", "error")
+        return redirect(url_for('list_reservations'))
 
 def get_db_connection():
     return mysql.connector.connect(**db_config)

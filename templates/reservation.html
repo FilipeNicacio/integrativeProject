@@ -63,15 +63,17 @@
     <button>List All Reservations</button>
     </a>
 
+    <br>
+
     {% if reservations %}
-        <h2 style="margin-top: 30px;">Search Results for "All Reservations":</h2>
-        <table border="1" cellpadding="5" cellspacing="0" style="margin: 20px auto; width: 60%;">
+        <h2 style="margin-top: 30px;">Results for "All Reservations":</h2>
+        <table class="results-table">
             <thead>
                 <tr>
-                    <th>Reservation ID</th>
+                    <th>ID</th>
                     <th>Guest Name</th>
                     <th>Floor</th>
-                    <th>Room Number</th>
+                    <th>Room</th>
                     <th>Check-in</th>
                     <th>Check-out</th>
                 </tr>
@@ -80,7 +82,11 @@
                 {% for reservation in reservations %}
                     <tr>
                         <td>{{ reservation.id }}</td>
-                        <td>{{ reservation.guest_name }}</td>
+                        <td>
+                            <a href="{{ url_for('guest_details', guest_id=reservation.guest_id) }}" target="_blank" class="guest-link">
+                                {{ reservation.guest_name }}
+                            </a>
+                        </td>
                         <td>{{ reservation.floor_number }}º Floor</td>
                         <td>{{ reservation.room_number }}</td>
                         <td>{{ reservation.check_in_date.strftime('%Y/%m/%d') }}</td>

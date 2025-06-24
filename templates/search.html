@@ -30,31 +30,47 @@
 
     <br>
 
-
     {% if results is defined %}
         <h2>Search Results for "{{ search_term }}":</h2>
         {% if results %}
-            <ul>
-                {% for guest in results %}
-                    <li>
-                        {{ guest.name }} — {{ guest.document }} — {{ guest.email }} — {{ guest.phone }}
-                        <form action="{{ url_for('edit_guest', guest_id=guest.id) }}" method="get" style="display: inline;">
-                        <button type="submit">Edit</button>
-                        </form>
-                        <form action="{{ url_for('delete_guest', guest_id=guest.id) }}" method="POST" style="display: inline;" onsubmit="return confirm('Are you sure you want to delete this guest?');">
-                        <button type="submit" style="background-color: red; color: white;">Delete</button>
-                        </form>
-                        <br><br>
-                    </li>
-                {% endfor %}
-            </ul>
+            <table class="results-table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Document</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for guest in results %}
+                        <tr>
+                            <td>{{ guest.name }}</td>
+                            <td>{{ guest.document }}</td>
+                            <td>{{ guest.email }}</td>
+                            <td>{{ guest.phone }}</td>
+                            <td class="actions-cell">
+                                <form action="{{ url_for('edit_guest', guest_id=guest.id) }}" method="get" style="display: inline;">
+                                    <button type="submit">Edit</button>
+                                </form>
+                                <form action="{{ url_for('delete_guest', guest_id=guest.id) }}" method="POST" style="display: inline;" onsubmit="return confirm('Are you sure you want to delete this guest?');">
+                                    <button type="submit" class="delete-button">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         {% else %}
-            <p>No guests found.</p>
+            <p>No guests found for "{{ search_term }}".</p>
         {% endif %}
     {% endif %}
 
+    <br>
+
     <form action="/" method="get" style="display: inline;">
-    <button type="submit">← Back to Search</button>
+    <button type="submit">← Back to Home</button>
     </form>
 
 </body>
