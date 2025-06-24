@@ -1,8 +1,9 @@
-from flask import Flask, render_template, request, redirect, flash, url_for, jsonify
+from flask import Flask, render_template, request, redirect, flash, url_for, jsonify, session
 from datetime import date
 import mysql.connector
 import re
-
+from functools import wraps
+from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
 app.secret_key = 'hotel'
@@ -14,11 +15,47 @@ db_config = {
     'database': 'integrativeproject_db'
 }
 
+def create_admin_user():
+    conn = None
+    cursor = None
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT id FROM users WHERE username = 'admin'")
+        if cursor.fetchone() is None:
+            hashed_password = generate_password_hash('admin')
+            cursor.execute("INSERT INTO users (username, password_hash, is_admin) VALUES (%s, %s, %s)",
+                           ('admin', hashed_password, 1))
+            conn.commit()
+            print(">>> User 'admin' created successfully. Password: 'admin")
+        else:
+            print(">>> User 'admin' already exists.")
+
+    except Exception as e:
+        print(f"Error creating user 'admin': {e}")
+
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'user_id' not in session:
+            flash("You need to be logged in to access this page.", "error")
+            return redirect(url_for('login'))
+        return f(*args, **kwargs)
+    return decorated_function
+
 @app.route("/")
+@login_required
 def home():
     return render_template('index.html')
 
 @app.route("/guest_registration", methods=["POST"])
+@login_required
 def guest_registration():
     name = request.form['name'].strip()
     email = request.form['email'].strip()
@@ -55,10 +92,12 @@ def guest_registration():
         return redirect("/")
 
 @app.route("/search_guest")
+@login_required
 def search_guest():
     return render_template("search.html")
 
 @app.route("/search_result", methods=["POST"])
+@login_required
 def search_result():
     search_term = request.form['search_term']
     conn = get_db_connection()
@@ -78,6 +117,7 @@ def search_result():
     return render_template("search.html", results=results, search_term=search_term)
 
 @app.route("/edit_guest/<int:guest_id>", methods=["GET"])
+@login_required
 def edit_guest(guest_id):
     print(f"Tentando atualizar hóspede com ID {guest_id}")
     try:
@@ -98,6 +138,7 @@ def edit_guest(guest_id):
         return redirect("/search_guest")
 
 @app.route("/update_guest/<int:guest_id>", methods=["POST"])
+@login_required
 def update_guest(guest_id):
     name = request.form['name']
     email = request.form['email']
@@ -142,6 +183,7 @@ def update_guest(guest_id):
         return redirect(url_for("edit_guest", guest_id=guest_id))
 
 @app.route("/delete_guest/<int:guest_id>", methods=["POST"])
+@login_required
 def delete_guest(guest_id):
     try:
         conn = get_db_connection()
@@ -167,6 +209,7 @@ def delete_guest(guest_id):
         return redirect("/search_guest")
 
 @app.route("/list_guests")
+@login_required
 def list_guests():
     try:
         conn = get_db_connection()
@@ -183,6 +226,7 @@ def list_guests():
         return redirect("/")
 
 @app.route("/reservation")
+@login_required
 def reservation():
     try:
         conn = get_db_connection()
@@ -200,6 +244,7 @@ def reservation():
         return redirect("/")
 
 @app.route("/get_rooms_by_floor/<int:floor_id>")
+@login_required
 def get_rooms_by_floor(floor_id):
     try:
         conn = get_db_connection()
@@ -215,6 +260,7 @@ def get_rooms_by_floor(floor_id):
 
 
 @app.route("/make_reservation", methods=["POST"])
+@login_required
 def make_reservation():
     guest_id = request.form['guest_id']
     room_id = request.form.get('room_id')
@@ -282,6 +328,7 @@ def make_reservation():
         return redirect("/reservation")
 
 @app.route('/list_reservations')
+@login_required
 def list_reservations():
     try:
         conn = get_db_connection()
@@ -318,6 +365,7 @@ def list_reservations():
 
 
 @app.route("/get_booked_dates/<int:room_id>")
+@login_required
 def get_booked_dates(room_id):
     try:
         conn = get_db_connection()
@@ -346,6 +394,7 @@ def get_booked_dates(room_id):
         return redirect("/")
 
 @app.route('/guest_details/<int:guest_id>')
+@login_required
 def guest_details(guest_id):
     try:
         conn = get_db_connection()
@@ -365,12 +414,43 @@ def guest_details(guest_id):
         flash(f"An error occurred: {e}", "error")
         return redirect(url_for('list_reservations'))
 
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    if request.method == "POST":
+        username = request.form['username']
+        password = request.form['password']
+
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute("SELECT * FROM users WHERE username = %s", (username,))
+        user = cursor.fetchone()
+        cursor.close()
+        conn.close()
+
+        if user and check_password_hash(user['password_hash'], password):
+            session.clear()
+            session['user_id'] = user['id']
+            session['username'] = user['username']
+            flash("Login successful!", "success")
+            return redirect(url_for('home'))
+        else:
+            flash("Invalid username or password.", "error")
+
+    return render_template("login.html")
+
+@app.route("/logout")
+def logout():
+    session.clear()
+    flash("You have been logged out.", "success")
+    return redirect(url_for('login'))
+
 def get_db_connection():
     return mysql.connector.connect(**db_config)
 
 if __name__ == "__main__":
 
     print("Iniciando o servidor Flask e testando conexão com o banco de dados...")
+    create_admin_user()
 
     try:
         conn = get_db_connection()

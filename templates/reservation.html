@@ -16,57 +16,51 @@
 
     <hr style="margin-top: 40px; margin-bottom: 40px;">
 
-    {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            <ul class="flashes">
-                {% for category, message in messages %}
-                    <li class="{{ category }}">{{ message }}</li>
+     <form action="/make_reservation" method="post" class="form-vertical">
+
+        <!-- Grupo Hóspede -->
+        <div class="form-group">
+            <label for="guest_id">Select Guest:</label>
+            <select name="guest_id" id="guest_id" required>
+                <option value="" disabled selected style="text-align: center;">-- Choose a guest --</option>
+                {% for guest in guests %}
+                    <option value="{{ guest.id }}" style="text-align: center;">{{ guest.name }} (ID: {{ guest.id }})</option>
                 {% endfor %}
-            </ul>
-        {% endif %}
-    {% endwith %}
-
-    <form action="/make_reservation" method="post" class="form-vertical">
-
-        <div class="form-group" style="text-align: center;">
-        <label for="guest_id">Select Guest:</label><br>
-        <select name="guest_id" id="guest_id" style="text-align: center;" required>
-            <option value="">-- Choose a guest --</option>
-            {% for guest in guests %}
-                <option value="{{ guest.id }}">{{ guest.name }} (ID: {{ guest.id }})</option>
-            {% endfor %}
-        </select><br><br>
+            </select>
         </div>
 
-        <div class="form-group" style="text-align: center;">
-        <label for="floor_select">Select Floor:</label><br>
-        <select name="floor_id" id="floor_select" style="text-align: center;" required>
-            <option value="">-- Choose a floor --</option>
-            {% for floor in floors %}
-                <option value="{{ floor.id }}">{{ floor.number }}º Floor</option>
-            {% endfor %}
-        </select><br><br>
+        <!-- Grupo Andar -->
+        <div class="form-group">
+            <label for="floor_select">Select Floor:</label>
+            <select name="floor_id" id="floor_select" required>
+                <option value="" disabled selected style="text-align: center;">-- Choose a floor --</option>
+                {% for floor in floors %}
+                    <option value="{{ floor.id }}" style="text-align: center;">{{ floor.number }}º Floor</option>
+                {% endfor %}
+            </select>
         </div>
 
-        <div class="form-group" style="text-align: center;">
-        <label for="room_select">Select Room:</label><br>
-        <select name="room_id" id="room_select" style="text-align: center;" required disabled>
-            <option value="">-- Choose a floor first  --</option>
-        </select><br><br>
+        <!-- Grupo Quarto -->
+        <div class="form-group">
+            <label for="room_select">Select Room:</label>
+            <select name="room_id" id="room_select" required disabled style="text-align: center;">
+                <option value="" style="text-align: center;">-- Choose a floor first --</option>
+            </select>
         </div>
 
-
-        <div class="form-group" style="text-align: center;">
-        <label for="check_in_date">Check-in Date:</label><br>
-        <input type="text" id="check_in_date" name="check_in_date" required disabled placeholder="Select a room first..." style="text-align: center;"><br><br>
+        <!-- Grupo Check-in -->
+        <div class="form-group">
+            <label for="check_in_date">Check-in Date:</label>
+            <input type="text" id="check_in_date" name="check_in_date" required disabled placeholder="Select a room first..." style="text-align: center;">
         </div>
 
-        <div class="form-group" style="text-align: center;">
-        <label for="check_out_date">Check-out Date:</label><br>
-        <input type="text" id="check_out_date" name="check_out_date" required disabled placeholder="Select a check-in date first..." style="text-align: center;"><br><br>
+        <!-- Grupo Check-out -->
+        <div class="form-group">
+            <label for="check_out_date">Check-out Date:</label>
+            <input type="text" id="check_out_date" name="check_out_date" required disabled placeholder="Select a check-in date first..." style="text-align: center;">
         </div>
 
-        <button type="submit">Reserve</button>
+        <button type="submit"><i class="fa-solid fa-calendar-check"></i> Reserve</button>
     </form>
 
     {% endblock %}

@@ -25,19 +25,35 @@
     <div class="page-container">
         <!-- Sidebar (Menu Lateral) -->
         <aside class="sidebar">
+
             <a href="{{ url_for('home') }}" class="sidebar-header">
                 <i class="fa-solid fa-hotel"></i>
                 <h2>HotelSys</h2>
             </a>
+
             <nav class="sidebar-nav">
                 <a href="{{ url_for('home') }}" class="nav-item"><i class="fa-solid fa-house"></i> Home</a>
                 <a href="{{ url_for('search_guest') }}" class="nav-item"><i class="fa-solid fa-users"></i> Guests</a>
                 <a href="{{ url_for('reservation') }}" class="nav-item"><i class="fa-solid fa-calendar-plus"></i> Make Reservation</a>
                 <a href="{{ url_for('list_reservations') }}" class="nav-item"><i class="fa-solid fa-list-check"></i> Reservations</a>
             </nav>
+
+            <div class="sidebar-user">
+            {% if session.username %}
+                <div class="user-info">
+                    <i class="fa-solid fa-user-circle"></i>
+                    <span>{{ session.username }}</span>
+                </div>
+                <a href="{{ url_for('logout') }}" class="logout-button">
+                    <i class="fa-solid fa-right-from-bracket"></i> Logout
+                </a>
+            {% endif %}
+            </div>
+
             <div class="sidebar-footer">
                 <p>© 2025 HotelSys</p>
             </div>
+
         </aside>
 
         <!-- Conteúdo Principal -->

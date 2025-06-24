@@ -13,41 +13,29 @@
     <h1 style="text-align: center;">Edit Guest</h1>
 
     <hr style="margin-top: 40px;">
-    <br>
-
-    {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            <ul class="flashes">
-                {% for category, message in messages %}
-                    <li class="{{ category }}">{{ message }}</li>
-                {% endfor %}
-            </ul>
-        {% endif %}
-    {% endwith %}
 
     <form action="{{ url_for('update_guest', guest_id=guest.id) }}" method="POST" class="form-vertical">
-
-        <div class="form-group" style="text-align: center;">
-        <label>Name:</label><br>
-        <input type="text" name="name" value="{{ guest.name }}" required maxlength="100" pattern="[A-Za-zÀ-ÿ\s]+" style="text-align: center;"><br><br>
+        <div class="form-group">
+            <label for="name">Name:</label>
+            <input type="text" id="name" name="name" value="{{ guest.name }}" required maxlength="100" pattern="[A-Za-zÀ-ÿ\s]+" style="text-align: center;">
         </div>
 
-        <div class="form-group" style="text-align: center;">
-        <label>CPF:</label><br>
-        <input type="text" name="document" value="{{ guest.document }}" required maxlength="11" minlength="11" pattern="\d{11}" style="text-align: center;"><br><br>
+        <div class="form-group">
+            <label for="document">CPF:</label>
+            <input type="text" id="document" name="document" value="{{ guest.document }}" required maxlength="11" minlength="11" pattern="\d{11}" style="text-align: center;">
         </div>
 
-        <div class="form-group" style="text-align: center;">
-        <label>Email Address:</label><br>
-        <input type="email" name="email" value="{{ guest.email }}" required maxlength="100" style="text-align: center;"><br><br>
+        <div class="form-group">
+            <label for="email">Email Address:</label>
+            <input type="email" id="email" name="email" value="{{ guest.email }}" required maxlength="100" style="text-align: center;">
         </div>
 
-        <div class="form-group" style="text-align: center;">
-        <label>Phone Number:</label><br>
-        <input type="text" name="phone" value="{{ guest.phone }}" required maxlength="11" minlength="11" pattern="\d{11}" style="text-align: center;"><br><br>
+        <div class="form-group">
+            <label for="phone">Phone Number:</label>
+            <input type="text" id="phone" name="phone" value="{{ guest.phone }}" required maxlength="11" minlength="11" pattern="\d{11}" style="text-align: center;">
         </div>
 
-        <button type="submit">Update</button>
+        <button type="submit">Update Guest</button>
     </form>
 
     <div class="navigation-buttons" style="margin-top: 2rem;">

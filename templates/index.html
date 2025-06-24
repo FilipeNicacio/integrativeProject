@@ -14,39 +14,32 @@
     <p style="text-align: center;">This is the homepage.</p>
 
     <hr style="margin-top: 40px;">
-    <br>
-
-    {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            <ul class="flashes">
-                {% for category, message in messages %}
-                    <li class="{{ category }}">{{ message }}</li>
-                {% endfor %}
-            </ul>
-        {% endif %}
-    {% endwith %}
 
     <form action="/guest_registration" method="post" class="form-vertical">
-        <h2 style="text-align: center;">Guest registration</h2> <br>
+        <h2 style="text-align: center;">Guest registration</h2>
 
-        <div class="form-group" style="text-align: center;">
-        <label for="name">Name:</label><br>
-        <input type="text" id="name" name="name" required maxlength="100" pattern="[A-Za-zÀ-ÿ\s]+" placeholder="Enter your name..." style="text-align: center;"><br><br>
+        <!-- Grupo Nome -->
+        <div class="form-group">
+            <label for="name">Name:</label>
+            <input type="text" id="name" name="name" required maxlength="100" pattern="[A-Za-zÀ-ÿ\s]+" placeholder="Enter guest's full name..." style="text-align: center;">
         </div>
 
-        <div class="form-group" style="text-align: center;">
-        <label for="document">CPF:</label><br>
-        <input type="text" id="document" name="document" required maxlength="11" minlength="11" pattern="\d{11}" placeholder="Enter your CPF..." style="text-align: center;"><br><br>
+        <!-- Grupo Documento -->
+        <div class="form-group">
+            <label for="document">CPF:</label>
+            <input type="text" id="document" name="document" required maxlength="11" minlength="11" pattern="\d{11}" placeholder="Enter only the numbers..." style="text-align: center;">
         </div>
 
-        <div class="form-group" style="text-align: center;">
-        <label for="email">Email Address:</label><br>
-        <input type="email" id="email" name="email" required maxlength="100" placeholder="Enter your e-mail..." style="text-align: center;"><br><br>
+        <!-- Grupo Email -->
+        <div class="form-group">
+            <label for="email">Email Address:</label>
+            <input type="email" id="email" name="email" required maxlength="100" placeholder="Enter a valid email address..." style="text-align: center;">
         </div>
 
-        <div class="form-group" style="text-align: center;">
-        <label for="phone">Phone Number:</label><br>
-        <input type="text" id="phone" name="phone" required maxlength="11" pattern="\d{11}" placeholder="Enter your phone..." style="text-align: center;"><br><br>
+        <!-- Grupo Telefone -->
+        <div class="form-group">
+            <label for="phone">Phone Number:</label>
+            <input type="text" id="phone" name="phone" required maxlength="11" pattern="\d{11}" placeholder="Enter DDD + number..." style="text-align: center;">
         </div>
 
         <button type="submit"> <i class="fa-solid fa-user-plus"></i> Register</button>
