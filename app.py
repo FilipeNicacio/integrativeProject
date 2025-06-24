@@ -217,7 +217,7 @@ def get_rooms_by_floor(floor_id):
 @app.route("/make_reservation", methods=["POST"])
 def make_reservation():
     guest_id = request.form['guest_id']
-    room_id = request.form.get('room_id').strip()
+    room_id = request.form.get('room_id')
     check_in_date = request.form['check_in_date']
     check_out_date = request.form['check_out_date']
 
@@ -225,9 +225,30 @@ def make_reservation():
         flash("All fields are required.", "error")
         return redirect("/reservation")
 
+    if check_out_date < check_in_date:
+        flash("Check-out date cannot be earlier than check-in date.", "error")
+        return redirect(url_for('reservation'))
+
     try:
         conn = get_db_connection()
         cursor = conn.cursor()
+
+        # A consulta verifica se existe alguma reserva para o mesmo quarto
+        query_check_conflict = """
+                    SELECT id FROM reservations
+                    WHERE room_id = %s
+                    AND check_in_date < %s
+                    AND check_out_date > %s
+                """
+        cursor.execute(query_check_conflict, (room_id, check_out_date, check_in_date))
+        conflicting_reservation = cursor.fetchone()
+
+        if conflicting_reservation:
+            flash("This room is already booked for the selected dates. Please choose different dates or another room.",
+                  "error")
+            cursor.close()
+            conn.close()
+            return redirect(url_for('reservation'))
 
         # Verificar se o hóspede existe
         cursor.execute("SELECT id FROM guests WHERE id = %s", (guest_id,))
@@ -309,6 +330,36 @@ def list_reservations():
     except Exception as e:
         flash(f"An error occurred while listing reservations: {e}", "error")
         return redirect("/")
+
+
+@app.route("/get_booked_dates/<int:room_id>")
+def get_booked_dates(room_id):
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+
+        # Seleciona as datas de check-in e check-out para o quarto específico
+        query = "SELECT check_in_date, check_out_date FROM reservations WHERE room_id = %s"
+        cursor.execute(query, (room_id,))
+
+        booked_dates = cursor.fetchall()
+        cursor.close()
+        conn.close()
+
+        date_ranges = []
+
+        for booking in booked_dates:
+            date_ranges.append({
+                "from": booking['check_in_date'].isoformat(),
+                "to": booking['check_out_date'].isoformat()
+            })
+
+        return jsonify(date_ranges)
+
+    except Exception as e:
+        flash(f"An error occurred while selecting the check-in and check-out date: {e}", "error")
+        return redirect("/")
+
 
 def get_db_connection():
     return mysql.connector.connect(**db_config)

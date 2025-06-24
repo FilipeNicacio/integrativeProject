@@ -80,3 +80,21 @@ input[type="text"]:focus, input[type="email"];focus, input[type="date"]:focus, s
   border-width: 3px;
   box-shadow: 0 0 8px rgba(0, 123, 255, 0.5);
 }
+
+.flatpickr-day.flatpickr-disabled {
+    background-color: #fca5a5 !important; /
+    color: #b91c1c !important;
+    border-color: #f87171 !important;
+    cursor: not-allowed !important;
+}
+
+.flatpickr-day.today.flatpickr-disabled {
+    background-color: #fca5a5 !important;
+    border-color: #ef4444 !important;
+    color: #7f1d1d !important;
+}
+
+.flatpickr-weekday {
+    color: #333;
+    font-weight: bold;
+}

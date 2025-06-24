@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <title>Make Reservation</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 </head>
 <body>
 
@@ -45,10 +47,10 @@
         </select><br><br>
 
         <label for="check_in_date">Check-in Date:</label><br>
-        <input type="date" id="check_in_date" name="check_in_date" min="{{ today }}" required style="text-align: center;" onchange="enableCheckOut()"><br><br>
+        <input type="text" id="check_in_date" name="check_in_date" required disabled placeholder="Select a room first..." style="text-align: center;"><br><br>
 
         <label for="check_out_date">Check-out Date:</label><br>
-        <input type="date" id="check_out_date" name="check_out_date" required disabled style="text-align: center;"><br><br>
+        <input type="text" id="check_out_date" name="check_out_date" required disabled placeholder="Select a check-in date first..." style="text-align: center;"><br><br>
 
         <button type="submit">Reserve</button>
     </form>
@@ -81,8 +83,8 @@
                         <td>{{ reservation.guest_name }}</td>
                         <td>{{ reservation.floor_number }}º Floor</td>
                         <td>{{ reservation.room_number }}</td>
-                        <td>{{ reservation.check_in_date.strftime('%d/%m/%Y') }}</td>
-                        <td>{{ reservation.check_in_date.strftime('%d/%m/%Y') }}</td>
+                        <td>{{ reservation.check_in_date.strftime('%Y/%m/%d') }}</td>
+                        <td>{{ reservation.check_out_date.strftime('%Y/%m/%d') }}</td>
                     </tr>
                 {% endfor %}
             </tbody>
@@ -96,65 +98,115 @@
     </form>
 
     <script>
-    function enableCheckOut() {
-        const checkIn = document.getElementById("check_in_date").value;
-        const checkOut = document.getElementById("check_out_date");
-        checkOut.disabled = !checkIn;
-        checkOut.min = checkIn;
-    }
-
-    document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function() {
             const floorSelect = document.getElementById('floor_select');
             const roomSelect = document.getElementById('room_select');
+            const checkInInput = document.getElementById('check_in_date');
+            const checkOutInput = document.getElementById('check_out_date');
 
+            // Variáveis para guardar as instâncias do calendário
+            let checkInPicker;
+            let checkOutPicker;
+
+            // Função para buscar quartos
             floorSelect.addEventListener('change', function() {
                 const floorId = this.value;
-
-                // Limpa e desabilita o seletor de quartos
                 roomSelect.innerHTML = '<option value="">-- Loading rooms... --</option>';
                 roomSelect.disabled = true;
+
+                // Desativa os calendários ao trocar de andar
+                if (checkInPicker) checkInPicker.destroy();
+                if (checkOutPicker) checkOutPicker.destroy();
+                checkInInput.disabled = true;
+                checkInInput.placeholder = "Select a room first...";
+                checkOutInput.disabled = true;
+                checkOutInput.placeholder = "Select a room first...";
 
                 if (!floorId) {
                     roomSelect.innerHTML = '<option value="">-- Choose a floor to see rooms --</option>';
                     return;
                 }
 
-                // Chamada para a API no backend
+                // Busca os quartos
                 fetch(`/get_rooms_by_floor/${floorId}`)
                     .then(response => response.json())
                     .then(data => {
-                        // Limpa o seletor novamente para adicionar as novas opções
                         roomSelect.innerHTML = '<option value="">-- Choose a room --</option>';
-
-                        if (data.error) {
-                            console.error('Error fetching rooms:', data.error);
-                            roomSelect.innerHTML = '<option value="">-- Error loading rooms --</option>';
-                            return;
+                        if (data && data.length > 0) {
+                            data.forEach(room => {
+                                const option = document.createElement('option');
+                                option.value = room.id;
+                                option.textContent = room.room_number;
+                                roomSelect.appendChild(option);
+                            });
+                            roomSelect.disabled = false;
+                        } else {
+                             roomSelect.innerHTML = '<option value="">-- No rooms found --</option>';
                         }
+                    });
+            });
 
-                        if (data.length === 0) {
-                            roomSelect.innerHTML = '<option value="">-- No rooms found --</option>';
-                            return;
-                        }
+            // Quando selecionado um quarto busca a data
+            roomSelect.addEventListener('change', function() {
+                const roomId = this.value;
 
-                        // Popula o seletor de quartos com os dados recebidos
-                        data.forEach(room => {
-                            const option = document.createElement('option');
-                            option.value = room.id;
-                            option.textContent = room.room_number;
-                            roomSelect.appendChild(option);
+                // Limpa e desativa os calendários antes de carregar os novos dados
+                if (checkInPicker) checkInPicker.destroy();
+                if (checkOutPicker) checkOutPicker.destroy();
+                checkInInput.value = "";
+                checkOutInput.value = "";
+                checkOutInput.disabled = true;
+
+                if (!roomId) {
+                    checkInInput.disabled = true;
+                    checkInInput.placeholder = "Select a room first...";
+                    return;
+                }
+
+                // Habilita o campo de check-in com mensagem de "Carregando"
+                checkInInput.disabled = false;
+                checkInInput.placeholder = "Loading available dates...";
+
+                // Chamada para NOVA API no backend
+                fetch(`/get_booked_dates/${roomId}`)
+                    .then(response => response.json())
+                    .then(bookedRanges => {
+                        const disabledDates = bookedRanges.map(range => {
+                            const checkOutDate = new Date(range.to);
+                            checkOutDate.setDate(checkOutDate.getDate() - 1);
+                            return {
+                                from: range.from,
+                                to: checkOutDate.toISOString().split('T')[0]
+                            };
                         });
 
-                        // Habilita o seletor de quartos
-                        roomSelect.disabled = false;
+                        // Inicializa o calendário de CHECK-IN
+                        checkInPicker = flatpickr(checkInInput, {
+                            dateFormat: "Y-m-d",
+                            minDate: "today",     // Não pode reservar no passado
+                            disable: disabledDates, // Desabilita as datas
+                            onChange: function(selectedDates) {
+                                if (selectedDates[0]) {
+                                    if (checkOutPicker) checkOutPicker.destroy();
+                                    checkOutPicker = flatpickr(checkOutInput, {
+                                        dateFormat: "Y-m-d",
+                                        minDate: new Date(selectedDates[0]).fp_incr(1),
+                                        disable: disabledDates
+                                    });
+                                    checkOutInput.disabled = false;
+                                    checkOutInput.placeholder = "Select check-out date...";
+                                }
+                            }
+                        });
+
+                        checkInInput.placeholder = "Select check-in date...";
                     })
                     .catch(error => {
-                        console.error('Fetch error:', error);
-                        roomSelect.innerHTML = '<option value="">-- Failed to load rooms --</option>';
+                        console.error('Error fetching booked dates:', error);
+                        checkInInput.placeholder = "Error loading dates";
                     });
             });
         });
     </script>
-
 </body>
 </html>
