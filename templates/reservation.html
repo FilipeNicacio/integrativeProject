@@ -6,10 +6,13 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    {% extends "base.html" %}
 </head>
 <body>
 
-    <h1>Make a Reservation</h1>
+    {% block content %}
+
+    <h1 style="text-align: center;">Make a Reservation</h1>
 
     <hr style="margin-top: 40px; margin-bottom: 40px;">
 
@@ -23,8 +26,9 @@
         {% endif %}
     {% endwith %}
 
-    <form action="/make_reservation" method="post">
+    <form action="/make_reservation" method="post" class="form-vertical">
 
+        <div class="form-group" style="text-align: center;">
         <label for="guest_id">Select Guest:</label><br>
         <select name="guest_id" id="guest_id" style="text-align: center;" required>
             <option value="">-- Choose a guest --</option>
@@ -32,7 +36,9 @@
                 <option value="{{ guest.id }}">{{ guest.name }} (ID: {{ guest.id }})</option>
             {% endfor %}
         </select><br><br>
+        </div>
 
+        <div class="form-group" style="text-align: center;">
         <label for="floor_select">Select Floor:</label><br>
         <select name="floor_id" id="floor_select" style="text-align: center;" required>
             <option value="">-- Choose a floor --</option>
@@ -40,68 +46,32 @@
                 <option value="{{ floor.id }}">{{ floor.number }}º Floor</option>
             {% endfor %}
         </select><br><br>
+        </div>
 
+        <div class="form-group" style="text-align: center;">
         <label for="room_select">Select Room:</label><br>
         <select name="room_id" id="room_select" style="text-align: center;" required disabled>
             <option value="">-- Choose a floor first  --</option>
         </select><br><br>
+        </div>
 
+
+        <div class="form-group" style="text-align: center;">
         <label for="check_in_date">Check-in Date:</label><br>
         <input type="text" id="check_in_date" name="check_in_date" required disabled placeholder="Select a room first..." style="text-align: center;"><br><br>
+        </div>
 
+        <div class="form-group" style="text-align: center;">
         <label for="check_out_date">Check-out Date:</label><br>
         <input type="text" id="check_out_date" name="check_out_date" required disabled placeholder="Select a check-in date first..." style="text-align: center;"><br><br>
+        </div>
 
         <button type="submit">Reserve</button>
     </form>
 
-    <br>
+    {% endblock %}
 
-    <hr style="margin-top: 40px; margin-bottom: 40px;">
-
-    <a href="{{ url_for('list_reservations') }}">
-    <button>List All Reservations</button>
-    </a>
-
-    <br>
-
-    {% if reservations %}
-        <h2 style="margin-top: 30px;">Results for "All Reservations":</h2>
-        <table class="results-table">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Guest Name</th>
-                    <th>Floor</th>
-                    <th>Room</th>
-                    <th>Check-in</th>
-                    <th>Check-out</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for reservation in reservations %}
-                    <tr>
-                        <td>{{ reservation.id }}</td>
-                        <td>
-                            <a href="{{ url_for('guest_details', guest_id=reservation.guest_id) }}" target="_blank" class="guest-link">
-                                {{ reservation.guest_name }}
-                            </a>
-                        </td>
-                        <td>{{ reservation.floor_number }}º Floor</td>
-                        <td>{{ reservation.room_number }}</td>
-                        <td>{{ reservation.check_in_date.strftime('%Y/%m/%d') }}</td>
-                        <td>{{ reservation.check_out_date.strftime('%Y/%m/%d') }}</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    {% endif %}
-
-    <br><br>
-
-    <form action="/" method="get" style="display: inline;">
-    <button type="submit">← Back to Home</button>
-    </form>
+    {% block scripts %}
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -214,5 +184,8 @@
             });
         });
     </script>
+
+    {% endblock %}
+
 </body>
 </html>

@@ -4,9 +4,16 @@
     <meta charset="UTF-8">
     <title>Edit Guest</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    {% extends "base.html" %}
 </head>
 <body>
-    <h1>Edit Guest</h1>
+
+    {% block content %}
+
+    <h1 style="text-align: center;">Edit Guest</h1>
+
+    <hr style="margin-top: 40px;">
+    <br>
 
     {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
@@ -18,27 +25,38 @@
         {% endif %}
     {% endwith %}
 
-    <form action="{{ url_for('update_guest', guest_id=guest.id) }}" method="POST">
+    <form action="{{ url_for('update_guest', guest_id=guest.id) }}" method="POST" class="form-vertical">
+
+        <div class="form-group" style="text-align: center;">
         <label>Name:</label><br>
         <input type="text" name="name" value="{{ guest.name }}" required maxlength="100" pattern="[A-Za-zÀ-ÿ\s]+" style="text-align: center;"><br><br>
+        </div>
 
+        <div class="form-group" style="text-align: center;">
         <label>CPF:</label><br>
         <input type="text" name="document" value="{{ guest.document }}" required maxlength="11" minlength="11" pattern="\d{11}" style="text-align: center;"><br><br>
+        </div>
 
+        <div class="form-group" style="text-align: center;">
         <label>Email Address:</label><br>
         <input type="email" name="email" value="{{ guest.email }}" required maxlength="100" style="text-align: center;"><br><br>
+        </div>
 
+        <div class="form-group" style="text-align: center;">
         <label>Phone Number:</label><br>
         <input type="text" name="phone" value="{{ guest.phone }}" required maxlength="11" minlength="11" pattern="\d{11}" style="text-align: center;"><br><br>
+        </div>
 
         <button type="submit">Update</button>
     </form>
 
-    <br>
+    <div class="navigation-buttons" style="margin-top: 2rem;">
+        <a href="{{ url_for('search_guest') }}" class="button">
+            <i class="fa-solid fa-arrow-left"></i> Back to Search
+        </a>
+    </div>
 
-    <form action="/search_guest" method="get" style="display: inline;">
-    <button type="submit">← Back to Search</button>
-    </form>
+    {% endblock %}
 
 </body>
 </html>

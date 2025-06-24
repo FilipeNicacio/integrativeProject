@@ -4,8 +4,11 @@
     <meta charset="UTF-8">
     <title>Search Guest</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    {% extends "base.html" %}
 </head>
 <body>
+
+    {% block content %}
 
     {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
@@ -17,21 +20,26 @@
         {% endif %}
     {% endwith %}
 
-    <h1>Search for Guest</h1>
+    <h1 style="text-align: center;" >Search for Guest</h1>
 
-    <form action="/search_result" method="POST">
-        <input type="text" name="search_term" placeholder="Enter name or document" style="text-align: center;" required>
-        <button type="submit">Search</button>
+    <hr style="margin-top: 40px;">
+    <br> <br>
+
+    <form action="/search_result" method="POST" class="form-vertical">
+        <input type="text" name="search_term" placeholder="Enter name or document" required>
+        <button type="submit"><i class="fa-solid fa-search"></i> Search</button>
     </form>
 
-    <form action="/list_guests" method="GET" style="margin-top: 10px;">
-    <button type="submit">List All Guests</button>
-    </form>
+    <div class="navigation-buttons">
+        <a href="{{ url_for('list_guests') }}" class="button">
+            <i class="fa-solid fa-list"></i> List All Guests
+        </a>
+    </div>
 
-    <br>
+    <br><br>
 
     {% if results is defined %}
-        <h2>Search Results for "{{ search_term }}":</h2>
+        <h2 style="text-align: center;">Search Results for "{{ search_term }}":</h2>
         {% if results %}
             <table class="results-table">
                 <thead>
@@ -67,11 +75,7 @@
         {% endif %}
     {% endif %}
 
-    <br>
-
-    <form action="/" method="get" style="display: inline;">
-    <button type="submit">← Back to Home</button>
-    </form>
+    {% endblock %}
 
 </body>
 </html>

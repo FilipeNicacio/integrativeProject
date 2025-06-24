@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>All Reservations</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    {% extends "base.html" %}
+</head>
+<body>
+
+    {% block content %}
+
+    <h1 style="text-align: center;">All Reservations</h1>
+
+    <hr style="margin-top: 40px; margin-bottom: 40px;">
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <ul class="flashes">
+                {% for category, message in messages %}
+                    <li class="{{ category }}">{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+
+    {% if reservations %}
+        <table class="results-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Guest Name</th>
+                    <th>Floor</th>
+                    <th>Room</th>
+                    <th>Check-in</th>
+                    <th>Check-out</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for reservation in reservations %}
+                    <tr>
+                        <td>{{ reservation.id }}</td>
+                        <td>
+                            <a href="{{ url_for('guest_details', guest_id=reservation.guest_id) }}" target="_blank" class="guest-link">
+                                {{ reservation.guest_name }}
+                            </a>
+                        </td>
+                        <td>{{ reservation.floor_number }}º Floor</td>
+                        <td>{{ reservation.room_number }}</td>
+                        <td>{{ reservation.check_in_date.strftime('%Y/%m/%d') }}</td>
+                        <td>{{ reservation.check_out_date.strftime('%Y/%m/%d') }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p style="text-align: center; margin-top: 2rem;">No reservations found</p>
+    {% endif %}
+
+    {% endblock %}
+
+</body>
+</html>

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Usaremos a fonte 'Poppins' do Google Fonts para um visual mais moderno -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Biblioteca de ícones: Font Awesome. Melhora muito a UX! -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+
+    <!-- Nosso CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+    <!-- Flatpickr (necessário para a página de reservas) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr" defer></script>
+
+    <!-- O título da página será dinâmico -->
+    <title>{% block title %}Hotel Management{% endblock %}</title>
+</head>
+<body>
+    <div class="page-container">
+        <!-- Sidebar (Menu Lateral) -->
+        <aside class="sidebar">
+            <a href="{{ url_for('home') }}" class="sidebar-header">
+                <i class="fa-solid fa-hotel"></i>
+                <h2>HotelSys</h2>
+            </a>
+            <nav class="sidebar-nav">
+                <a href="{{ url_for('home') }}" class="nav-item"><i class="fa-solid fa-house"></i> Home</a>
+                <a href="{{ url_for('search_guest') }}" class="nav-item"><i class="fa-solid fa-users"></i> Guests</a>
+                <a href="{{ url_for('reservation') }}" class="nav-item"><i class="fa-solid fa-calendar-plus"></i> Make Reservation</a>
+                <a href="{{ url_for('list_reservations') }}" class="nav-item"><i class="fa-solid fa-list-check"></i> Reservations</a>
+            </nav>
+            <div class="sidebar-footer">
+                <p>© 2025 HotelSys</p>
+            </div>
+        </aside>
+
+        <!-- Conteúdo Principal -->
+        <main class="main-content">
+            <header class="main-header">
+                <h1>{% block page_title %}{% endblock %}</h1>
+            </header>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div class="flashes-container">
+                        {% for category, message in messages %}
+                            <div class="flash {{ category }}">{{ message }}</div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+
+            <!-- Este bloco será substituído pelo conteúdo de cada página filha -->
+            <div class="content-body">
+                {% block content %}{% endblock %}
+            </div>
+        </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr" defer></script>
+
+    {% block scripts %}{% endblock %}
+
+</body>
+</html>

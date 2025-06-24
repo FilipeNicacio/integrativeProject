@@ -310,21 +310,7 @@ def list_reservations():
         cursor.execute(query)
         reservations_list = cursor.fetchall()
 
-        # A rota /reservation também precisa da lista de hóspedes para o formulário
-        cursor.execute("SELECT id, name FROM guests ORDER BY name ASC")
-        guests_for_form = cursor.fetchall()
-        cursor.execute("SELECT id, number FROM floors ORDER BY number ASC")
-        floors_for_form = cursor.fetchall()
-
-        today = date.today().isoformat()
-
-        return render_template(
-            'reservation.html',
-            reservations=reservations_list,
-            guests=guests_for_form,
-            floors=floors_for_form,
-            today=today
-        )
+        return render_template('list_reservations.html', reservations=reservations_list)
 
     except Exception as e:
         flash(f"An error occurred while listing reservations: {e}", "error")
