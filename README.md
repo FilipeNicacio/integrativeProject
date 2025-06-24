@@ -1,5 +1,7 @@
 # 🏨 Hotel Management System
 
+**Project Status:** In Development 🚧
+
 Project developed for the **College Integrative Project**, with the goal of creating a comprehensive system to assist in the management of hotels, inns, and lodging establishments.
 
 ---
@@ -33,12 +35,27 @@ This system is intended for:
 ## 🛠️ Technologies Used
 
 - **Back-end**: Python with Flask  
-- **Front-end**: HTML5, CSS3  
+- **Front-end**: HTML5, CSS3 and the Flatpickr calendar library
 - **Database**: MySQL  
 - **Development Environment**: PyCharm (Community Edition)
+- **Version Control**: Git & GitHub
+- **External Access Testing**: Ngrok
 
 ---
 
 ## 📂 Project Structure
 
-_To be updated as development progresses..._
+```
+/
+├── app.py                  # Main backend logic (Flask)
+├── requirements.txt        # Python dependency list
+├── static/
+│   └── css/
+│       └── style.css       # Application styles
+└── templates/
+    ├── index.html          # Homepage and guest registration form
+    ├── search.html         # Guest search and listing page
+    ├── edit_guest.html     # Guest editing form
+    ├── reservation.html    # Page to create and list reservations
+    └── guest_details.html  # Dedicated page for guest details
+```
