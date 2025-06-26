@@ -203,7 +203,8 @@ def delete_guest(guest_id):
         conn.close()
 
         flash("Guest deleted successfully.", "success")
-        return redirect("/")
+        return redirect("/search_guest")
+
     except Exception as e:
         flash(f"An error occurred while deleting guest: {e}", "error")
         return redirect("/search_guest")
@@ -211,10 +212,22 @@ def delete_guest(guest_id):
 @app.route("/list_guests")
 @login_required
 def list_guests():
+
+    search_term = request.args.get('search', '').strip()
+
     try:
         conn = get_db_connection()
         cursor = conn.cursor(dictionary=True)
-        cursor.execute("SELECT * FROM guests ORDER BY name ASC")
+
+        if search_term:
+            query = "SELECT * FROM guests WHERE name LIKE %s OR document LIKE %s ORDER BY name ASC"
+            search_like = f"%{search_term}%"
+            cursor.execute(query, (search_like, search_like))
+        else:
+            # Se não, lista todos os hóspedes
+            query = "SELECT * FROM guests ORDER BY name ASC"
+            cursor.execute(query)
+
         guests = cursor.fetchall()
         cursor.close()
         conn.close()
@@ -330,38 +343,52 @@ def make_reservation():
 @app.route('/list_reservations')
 @login_required
 def list_reservations():
+
+    start_date = request.args.get('start_date')
+    end_date = request.args.get('end_date')
+    reservations_list = []
+
     try:
         conn = get_db_connection()
         cursor = conn.cursor(dictionary=True)
 
         query = """
-                SELECT
-                r.id,
-                r.check_in_date,
-                r.check_out_date,
-                g.id AS guest_id,
-                g.name AS guest_name,
-                ro.room_number,
-                f.number AS floor_number 
-            FROM
-                reservations AS r
-            JOIN
-                guests AS g ON r.guest_id = g.id
-            JOIN
-                rooms AS ro ON r.room_id = ro.id
-            JOIN
-                floors AS f ON ro.floor_id = f.id  
-            ORDER BY
-                r.check_in_date ASC, f.number ASC, ro.room_number ASC
-            """
-        cursor.execute(query)
-        reservations_list = cursor.fetchall()
+            SELECT r.id, r.check_in_date, r.check_out_date, g.id AS guest_id, 
+                   g.name AS guest_name, ro.room_number, f.number AS floor_number 
+            FROM reservations AS r
+            JOIN guests AS g ON r.guest_id = g.id
+            JOIN rooms AS ro ON r.room_id = ro.id
+            JOIN floors AS f ON ro.floor_id = f.id
+        """
 
-        return render_template('list_reservations.html', reservations=reservations_list)
+        conditions = []
+        params = []
+
+        if start_date:
+            conditions.append("r.check_in_date >= %s")
+            params.append(start_date)
+
+        if end_date:
+            conditions.append("r.check_in_date <= %s")
+            params.append(end_date)
+
+        if conditions:
+            query += " WHERE " + " AND ".join(conditions)
+
+        query += " ORDER BY r.check_in_date ASC"
+
+        cursor.execute(query, tuple(params))
+        reservations_list = cursor.fetchall()
+        cursor.close()
+        conn.close()
 
     except Exception as e:
         flash(f"An error occurred while listing reservations: {e}", "error")
         return redirect("/")
+
+    return render_template('list_reservations.html',
+                           reservations=reservations_list,
+                           filters={'start_date': start_date, 'end_date': end_date})
 
 
 @app.route("/get_booked_dates/<int:room_id>")

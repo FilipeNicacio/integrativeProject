@@ -14,6 +14,21 @@
 
     <hr style="margin-top: 40px; margin-bottom: 40px;">
 
+    <form action="{{ url_for('list_reservations') }}" method="GET" class="form-vertical">
+        <div class="filter-group" style="text-align: center;">
+            <label for="start_date">From Check-in:</label>
+            <input type="text" id="start_date" name="start_date" style="text-align: center;" value="{{ filters.start_date or '' }}" placeholder="YYYY-MM-DD">
+        </div>
+        <div class="filter-group" style="text-align: center;">
+            <label for="end_date">To Check-in:</label>
+            <input type="text" id="end_date" name="end_date" style="text-align: center;" value="{{ filters.end_date or '' }}" placeholder="YYYY-MM-DD">
+        </div>
+        <button type="submit"><i class="fa-solid fa-filter"></i> Filter</button>
+        {% if filters.start_date or filters.end_date %}
+        <a href="{{ url_for('list_reservations') }}" class="button clear-button">Clear</a>
+        {% endif %}
+    </form>
+
     {% if reservations %}
         <table class="results-table">
             <thead>
@@ -30,11 +45,7 @@
                 {% for reservation in reservations %}
                     <tr>
                         <td>{{ reservation.id }}</td>
-                        <td>
-                            <a href="{{ url_for('guest_details', guest_id=reservation.guest_id) }}" target="_blank" class="guest-link">
-                                {{ reservation.guest_name }}
-                            </a>
-                        </td>
+                        <td><a href="{{ url_for('guest_details', guest_id=reservation.guest_id) }}" target="_blank" class="guest-link">{{ reservation.guest_name }}</a></td>
                         <td>{{ reservation.floor_number }}º Floor</td>
                         <td>{{ reservation.room_number }}</td>
                         <td>{{ reservation.check_in_date.strftime('%Y/%m/%d') }}</td>
@@ -44,8 +55,19 @@
             </tbody>
         </table>
     {% else %}
-        <p style="text-align: center; margin-top: 2rem;">No reservations found</p>
+        <p class="no-results">No reservations found matching the criteria.</p>
     {% endif %}
+
+    {% endblock %}
+
+    {% block scripts %}
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            flatpickr("#start_date", { dateFormat: "Y-m-d" });
+            flatpickr("#end_date", { dateFormat: "Y-m-d" });
+        });
+    </script>
 
     {% endblock %}
 

@@ -13,11 +13,13 @@
     <h1 style="text-align: center;" >Search for Guest</h1>
 
     <hr style="margin-top: 40px;">
-    <br> <br>
 
     <form action="/search_result" method="POST" class="form-vertical">
-        <input type="text" name="search_term" placeholder="Enter name or document" required>
+        <input type="text" name="search_term" style="text-align: center;" placeholder="Filter by name or document..." required>
         <button type="submit"><i class="fa-solid fa-search"></i> Search</button>
+        {% if search_term %}
+        <a href="{{ url_for('search_guest') }}" class="button clear-button">Clear Filter</a>
+        {% endif %}
     </form>
 
     <div class="navigation-buttons">

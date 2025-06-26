@@ -370,4 +370,33 @@ button.delete-button:hover {
     justify-content: center;
     gap: 0.5rem;
 }
+
 .logout-button:hover { background-color: var(--primary-hover); }
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.filter-form input {
+    width: auto;
+    min-width: 180px;
+}
+
+.button.clear-button {
+    width: 25%;
+    align-self: center;
+    background-color: #6b7280;
+}
+
+.button.clear-button:hover {
+    background-color: #4b5563;
+}
+
+.no-results {
+    text-align: center;
+    margin-top: 2rem;
+    font-size: 1.1rem;
+    color: #6b7280;
+}
