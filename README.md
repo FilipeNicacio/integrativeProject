@@ -1,61 +1,171 @@
 # 🏨 Hotel Management System
 
-**Project Status:** In Development 🚧
+A web-based Hotel Management System developed with **Python, Flask, and MySQL** to streamline guest registration and reservation management.
 
-Project developed for the **College Integrative Project**, with the goal of creating a comprehensive system to assist in the management of hotels, inns, and lodging establishments.
-
----
-
-## 📋 Description
-
-This system is designed to streamline the daily operations of a hotel by integrating tools for reservation management, guest registration, room administration, client-side room service requests, and the generation of administrative reports.
+This project was created as part of the **Integrative Project** course and demonstrates the application of full-stack web development concepts, database integration, and CRUD operations in a real-world hospitality scenario.
 
 ---
 
-## 🎯 Project Objectives
+## 📋 Overview
 
-- Optimize hotel management processes  
-- Automate tasks such as check-in and check-out  
-- Allow guests to request room services directly through the system  
-- Provide reports on occupancy, financials, and performance  
-- Centralize information regarding guests, reservations, and rooms
+The Hotel Management System provides a centralized platform for managing hotel guests and reservations. The application allows hotel staff to efficiently register guests, search and update records, and manage reservations through an intuitive web interface.
+
+The system follows a traditional client-server architecture and uses a MySQL database for persistent data storage.
 
 ---
 
-## 🧑‍💼 Target Audience
+## ✨ Features
 
-This system is intended for:
-- Small and medium-sized hotels  
-- Inns and hostels  
-- Lodging owners seeking administrative automation  
-- Reception and administrative staff
+### Guest Management
+
+* Register new guests
+* Search guests by information
+* View guest details
+* Update guest records
+* Delete guest records
+
+### Reservation Management
+
+* Create reservations
+* View reservation list
+* Manage reservation information
+
+### Authentication
+
+* User login system
+* Protected routes using authentication
+
+### User Interface
+
+* Responsive web pages
+* Simple and intuitive navigation
+* Organized data presentation
 
 ---
 
-## 🛠️ Technologies Used
+## 🛠️ Technology Stack
 
-- **Back-end**: Python with Flask  
-- **Front-end**: HTML5, CSS3 and the Flatpickr calendar library
-- **Database**: MySQL  
-- **Development Environment**: PyCharm (Community Edition)
-- **Version Control**: Git & GitHub
-- **External Access Testing**: Ngrok
+| Category                | Technology    |
+| ----------------------- | ------------- |
+| Backend                 | Python        |
+| Framework               | Flask         |
+| Database                | MySQL         |
+| Frontend                | HTML5, CSS3   |
+| Authentication          | Flask Session |
+| Development Environment | PyCharm       |
 
 ---
 
-## 📂 Project Structure
+## 📁 Project Structure
 
+```text
+integrativeProject/
+│
+├── app.py
+├── integrativeproject_db.sql
+├── requirements.txt
+│
+├── templates/
+│   ├── base.html
+│   ├── index.html
+│   ├── login.html
+│   ├── search.html
+│   ├── edit_guest.html
+│   ├── guest_details.html
+│   ├── reservation.html
+│   └── list_reservations.html
+│
+└── static/
+    └── css/
+        └── style.css
 ```
-/
-├── app.py                  # Main backend logic (Flask)
-├── requirements.txt        # Python dependency list
-├── static/
-│   └── css/
-│       └── style.css       # Application styles
-└── templates/
-    ├── index.html          # Homepage and guest registration form
-    ├── search.html         # Guest search and listing page
-    ├── edit_guest.html     # Guest editing form
-    ├── reservation.html    # Page to create and list reservations
-    └── guest_details.html  # Dedicated page for guest details
+
+---
+
+## ⚙️ Installation
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/FilipeNicacio/integrativeProject.git
+cd integrativeProject
 ```
+
+### 2. Create the Database
+
+Create a MySQL database named:
+
+```sql
+CREATE DATABASE integrativeproject_db;
+```
+
+### 3. Import the SQL Script
+
+Import the file:
+
+```text
+integrativeproject_db.sql
+```
+
+into the database created in the previous step.
+
+### 4. Install Dependencies
+
+Install all required packages:
+
+```bash
+pip install -r requirements.txt
+```
+
+If the requirements file is unavailable, install manually:
+
+```bash
+pip install flask
+pip install mysql-connector-python
+pip install werkzeug
+```
+
+### 5. Configure Database Connection
+
+Verify the database configuration inside `app.py`:
+
+```python
+db_config = {
+    'host': 'localhost',
+    'user': 'root',
+    'password': '',
+    'database': 'integrativeproject_db'
+}
+```
+
+Adjust the credentials according to your local MySQL configuration.
+
+### 6. Run the Application
+
+```bash
+python app.py
+```
+
+The application will be available at:
+
+```text
+http://localhost:5000
+```
+
+---
+
+## 🧪 Evaluation Instructions
+
+To successfully execute the project:
+
+1. Ensure MySQL Server is running.
+2. Create the database `integrativeproject_db`.
+3. Import the provided SQL file.
+4. Install the required Python dependencies.
+5. Run the application using:
+
+```bash
+python app.py
+```
+
+---
